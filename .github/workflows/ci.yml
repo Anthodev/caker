@@ -29,8 +29,8 @@ jobs:
               with:
                 time: '5s'
             - name: Check HTTP reachability
-              run: curl -v -o /dev/null $SERVER_NAME
+              run: curl -v -o /dev/null http://$PROJECT_HOST
             - name: Check HTTPS reachability
-              run: curl  -vk -o /dev/null $SERVER_NAME
+              run: curl  -vk -o /dev/null https://$PROJECT_HOST
             - name: PHPUnit
               run: docker-compose exec -T php bin/phpunit
