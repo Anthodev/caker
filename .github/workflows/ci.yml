@@ -30,10 +30,10 @@ jobs:
             - name: Check HTTP reachability
               env:
                 SERVER_NAME: ${{ secrets.SERVER_NAME }}
-              run: curl -v -o /dev/null $SERVER_NAME
+              run: curl -v -o /dev/null ${SERVER_NAME}
             - name: Check HTTPS reachability
               env:
                 SERVER_NAME: ${{ secrets.SERVER_NAME }}
-              run: curl  -vk -o /dev/null $SERVER_NAME
+              run: curl  -vk -o /dev/null ${SERVER_NAME}
             - name: PHPUnit
               run: docker-compose exec -T php bin/phpunit
