@@ -33,4 +33,4 @@ jobs:
             # - name: Check HTTPS reachability
             #   run: curl  -vk -o /dev/null https://$PROJECT_HOST
             - name: PHPUnit
-              run: docker exec -t app-php php vendor/bin/simple-phpunit
+              run: docker exec -t app-php vendor/bin/simple-phpunit
