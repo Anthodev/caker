@@ -12,6 +12,8 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v2
             - name: Pull images
+              run: docker-compose pull
+            - name: Start services
               env:
                 APP_DEV: ${{ secrets.APP_DEV }}
                 PROJECT_HOST: ${{ secrets.PROJECT_HOST }}
@@ -20,8 +22,6 @@ jobs:
                 DB_NAME: ${{ secrets.DB_NAME }}
                 DB_USER: ${{ secrets.DB_USER }}
                 DB_PWD: ${{ secrets.DB_PWD }}
-              run: docker-compose pull
-            - name: Start services
               run: docker-compose up --build -d
             - name: Sleep for 5 seconds
               uses: jakejarvis/wait-action@master
