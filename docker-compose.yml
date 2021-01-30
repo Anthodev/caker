@@ -4,8 +4,6 @@ services:
   app:
     image: thecodingmachine/php:8.0-v4-fpm
     container_name: "app-php"
-    env_file:
-      - ./.env
     depends_on:
       - app-db
     volumes:
@@ -29,8 +27,6 @@ services:
   caddy:
     image: caddy
     container_name: "app-caddy"
-    env_file:
-      - ./.env
     volumes:
       - ./app:/var/www/html:ro
       - ./app/docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
@@ -54,8 +50,6 @@ services:
   app-db:
     image: postgres
     container_name: "app-db"
-    env_file:
-      - ./.env
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
