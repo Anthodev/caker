@@ -1,0 +1,49 @@
+name: CI
+
+on:
+    push:
+    pull_request:
+
+jobs:
+    tests:
+        name: Docker build
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+            - name: Pull images
+              env:
+                APP_DEV: ${{ secrets.APP_DEV }}
+                PROJECT_HOST: ${{ secrets.PROJECT_HOST }}
+                PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
+                SERVER_NAME: ${{ secrets.SERVER_NAME }}
+                DB_NAME: ${{ secrets.DB_NAME }}
+                DB_USER: ${{ secrets.DB_USER }}
+                DB_PWD: ${{ secrets.DB_PWD }}
+              run: docker-compose pull
+            - name: Start services
+              run: docker-compose up --build -d
+            - name: Wait for services
+              run: |
+                  while status="$(docker inspect --format="{{if .Config.Healthcheck}}{{print .State.Health.Status}}{{end}}" "$(docker-compose ps -q php)")"; do
+                    case $status in
+                      starting) sleep 1;;
+                      healthy) exit 0;;
+                      unhealthy)
+                        docker-compose ps
+                        docker-compose logs
+                        exit 1
+                      ;;
+                    esac
+                  done
+                  exit 1
+            - name: Check HTTP reachability
+              env:
+                SERVER_NAME: ${{ secrets.SERVER_NAME }}
+              run: curl -v -o /dev/null $SERVER_NAME
+            - name: Check HTTPS reachability
+              env:
+                SERVER_NAME: ${{ secrets.SERVER_NAME }}
+              run: curl  -vk -o /dev/null $SERVER_NAME
+            - name: PHPUnit
+              run: docker-compose exec -T php bin/phpunit
