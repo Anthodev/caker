@@ -2,7 +2,11 @@ name: CI
 
 on:
     push:
+      paths:
+        - 'app/**'
     pull_request:
+      paths:
+        - 'app/**'
 
 env:
   APP_DEV: ${{ secrets.APP_DEV }}
@@ -15,38 +19,58 @@ env:
 
 jobs:
     tests:
-        name: Docker build
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v2
-            - name: Pull images
-              run: docker-compose pull
-            - name: Start services
-              run: docker-compose up --build -d
-              env:
-                APP_ENV: "$APP_ENV"
-                DATABASE_URL: "postgres://$DB_USER:$DB_PWD@app-db:5432/app?sslmode=disable&charset=utf8"
-                PHP_EXTENSION_PGSQL: 1
-                PHP_EXTENSION_PDOPGSQL: 1
-                PHP_EXTENSION_INTL: 1
-                PHP_EXTENSION_GD: 1
-                PHP_INI_MEMORY_LIMIT: -1
-                # PHP_EXTENSION_XDEBUG: 1
-                # PHP_INI_XDEBUG__REMOTE_AUTOSTART: 1
+      runs-on: ubuntu-latest
 
-                STARTUP_COMMAND_1: composer install
-                STARTUP_COMMAND_2: echo 'alias sf="php bin/console"' >> ~/.bashrc
-                STARTUP_COMMAND_3: echo 'alias phpunit="php vendor/bin/simple-phpunit"' >> ~/.bashrc
-            - name: Run composer
-              run: docker exec -t app-php composer install
-            - name: Sleep for 5 seconds
-              uses: jakejarvis/wait-action@master
-              with:
-                time: '5s'
-            - name: Check HTTP reachability
-              run: curl -v -o /dev/null http://$PROJECT_HOST
-            # - name: Check HTTPS reachability
-            #   run: curl  -vk -o /dev/null https://$PROJECT_HOST
-            - name: PHPUnit
-              run: docker exec -t app-php php /srv/api/vendor/bin/simple-phpunit
+      services:
+        postgres:
+          image: postgres
+          env:
+            POSTGRES_DB: $DB_NAME
+            POSTGRES_USER: $DB_USER
+            POSTGRES_PASSWORD: $DB_PWD
+          options: >-
+            --health-cmd pg_isready
+            --health-interval 10s
+            --health-timeout 5s
+            --health-retries 5
+
+      steps:
+        - uses: actions/checkout@v2
+
+        - name: Setup PHP, extensions and composer with shivammathur/setup-php
+          uses: shivammathur/setup-php@v2
+          with:
+            php-version: '8.0'
+            extensions: mbstring, xml, ctype, iconv, intl, dom, filter, gd, iconv, json, pdo, pgsql
+            tools: composer:v2, phpunit:9.5, phpstan
+          env:
+            update: true
+
+        # - name: Validate composer.json and composer.lock
+        #   working-directory: ./AccountService
+        #   run: |
+        #     composer validate
+
+        - name: Cache Composer packages
+          id: composer-cache
+          uses: actions/cache@v2
+          with:
+            working_dir: ./app
+            path: vendor
+            key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+            restore-keys: |
+              ${{ runner.os }}-php-
+        - name: Install dependencies
+          working-directory: ./app
+          run: |
+            composer install --no-progress --prefer-dist --optimize-autoloader
+        - name: Run coding standards checks
+          working-directory: ./app
+          run: vendor/bin/phpstan analyse
+
+        - name: Run phpunit for app
+          working-directory: ./app
+          env:
+            DATABASE_URL: postgres://$DB_USER:$DB_PWD@{{ job.services.postgres }}:5432/app?sslmode=disable&charset=utf8
+          run: vendor/bin/simple-phpunit
+
