@@ -29,6 +29,9 @@ services:
       - ./app/docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
+    environment:
+      PROJECT_NAME: ${PROJECT_NAME}
+      PROJECT_HOST: ${PROJECT_HOST}
     ports:
       # HTTP
       - target: 80
