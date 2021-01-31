@@ -24,6 +24,8 @@ jobs:
               run: docker-compose pull
             - name: Start services
               run: docker-compose up --build -d
+            - name: Run composer
+              run: docker exec -t app-php composer install
             - name: Sleep for 30 seconds
               uses: jakejarvis/wait-action@master
               with:
