@@ -2,11 +2,7 @@ name: CI
 
 on:
     push:
-      paths:
-        - 'app/**'
     pull_request:
-      paths:
-        - 'app/**'
 
 env:
   APP_DEV: ${{ secrets.APP_DEV }}
