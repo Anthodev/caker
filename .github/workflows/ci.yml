@@ -69,5 +69,7 @@ jobs:
 
         - name: Run coding standards checks
           working-directory: ./app
-          run: vendor/bin/phpstan analyse
+          run: |
+            vendor/bin/phpstan analyse
+            vendor/bin/ecs check
 
