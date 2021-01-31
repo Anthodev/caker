@@ -60,13 +60,14 @@ jobs:
           working-directory: ./app
           run: |
             composer install --no-progress --prefer-dist --optimize-autoloader
-        - name: Run coding standards checks
-          working-directory: ./app
-          run: vendor/bin/phpstan analyse
 
         - name: Run phpunit for app
           working-directory: ./app
           env:
             DATABASE_URL: postgres://$DB_USER:$DB_PWD@{{ job.services.postgres }}:5432/app?sslmode=disable&charset=utf8
           run: vendor/bin/simple-phpunit
+
+        - name: Run coding standards checks
+          working-directory: ./app
+          run: vendor/bin/phpstan analyse
 
