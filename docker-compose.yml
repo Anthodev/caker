@@ -3,14 +3,14 @@ version: "3"
 services:
   app:
     image: thecodingmachine/php:8.0-v4-fpm
-    container_name: "app-php"
+    container_name: "${PROJECT_NAME}-php"
     depends_on:
-      - app-db
+      - db
     volumes:
       - ./app:/var/www/html:rw,cached
     environment:
       APP_ENV: "${APP_DEV}"
-      DATABASE_URL: "postgres://${DB_USER}:${DB_PWD}@app-db:5432/app?sslmode=disable&charset=utf8"
+      DATABASE_URL: "postgres://${DB_USER}:${DB_PWD}@${PROJECT_NAME}-db:5432/app?sslmode=disable&charset=utf8"
       PHP_EXTENSION_PGSQL: 1
       PHP_EXTENSION_PDOPGSQL: 1
       PHP_EXTENSION_INTL: 1
@@ -26,7 +26,7 @@ services:
 
   caddy:
     image: caddy
-    container_name: "app-caddy"
+    container_name: "${PROJECT_NAME}-caddy"
     volumes:
       - ./app:/var/www/html:ro
       - ./app/docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
@@ -47,9 +47,9 @@ services:
         protocol: udp
     restart: unless-stopped
 
-  app-db:
+  db:
     image: postgres
-    container_name: "app-db"
+    container_name: "${PROJECT_NAME}-db"
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
