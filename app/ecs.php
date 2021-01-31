@@ -19,4 +19,9 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         SetList::PSR_12,
         SetList::DOCTRINE_ANNOTATIONS
     ));
+
+    $parameters->set(Option::SKIP, [
+        __DIR__ . '*/bootstrap.php',
+        __DIR__ . '*/Kernel.php',
+    ]);
 };
