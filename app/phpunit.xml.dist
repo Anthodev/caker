@@ -13,6 +13,13 @@
         <server name="SHELL_VERBOSITY" value="-1" />
         <server name="SYMFONY_PHPUNIT_REMOVE" value="" />
         <server name="SYMFONY_PHPUNIT_VERSION" value="9.5" />
+        <server name="KERNEL_CLASS" value="App\Kernel" />
+        <server name="SYMFONY_DEPRECATIONS_HELPER" value="weak" />
+
+        <!-- ###+ symfony/framework-bundle ### -->
+        <env name="APP_ENV" value="test"/>
+        <env name="APP_SECRET" value="9c8d7da12f3ff7899eacd8a0122f8935"/>
+        <!-- ###- symfony/framework-bundle ### -->
     </php>
 
     <testsuites>
