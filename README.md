@@ -9,10 +9,10 @@ Caker is a Symfony development stack with the following docker configuration:
     - gd
 
 For the Symfony environment, here is the configuration :
-- PHP 8.0.* (with unlimited PHP memory)
+- PHP 8.0.* (with unlimited PHP memory configured)
 - Symfony 5.2.*
 - PHPUnit 9.5.*
-- PHPStan (on level 5) with the following packages:
+- PHPStan (on level 5) with the following packages (and pre-configured):
     - extension-installer
     - phpstan-doctrine
     - phpstan-phpunit
@@ -61,4 +61,5 @@ This is a list of extensions that works very well with this stack:
 - [Path Intellisense](https://marketplace.visualstudio.com/items?itemName=christian-kohler.path-intellisense)
 
 ## Upcoming
-- Add Github Actions support
+- Add Vulcain support
+- Add Mercure support
