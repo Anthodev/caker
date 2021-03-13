@@ -13,8 +13,10 @@ services:
       DATABASE_URL: "postgres://${DB_USER}:${DB_PWD}@${PROJECT_NAME}-db:5432/${DB_NAME}?sslmode=disable&charset=utf8"
       PHP_EXTENSIONS: "pdo_pgsql pgsql gd intl xdebug"
       PHP_INI_MEMORY_LIMIT: -1
-      # PHP_EXTENSION_XDEBUG: 1
-      # PHP_INI_XDEBUG__REMOTE_AUTOSTART: 1
+      PHP_INI_XDEBUG__MODE: "debug"
+      PHP_INI_XDEBUG__CLIENT_PORT: 9003
+      PHP_INI_XDEBUG__IDEKEY: "${XDEBUG_IDEKEY}"
+      PHP_EXTENSION_XDEBUG: 1
 
       STARTUP_COMMAND_1: composer install
       STARTUP_COMMAND_2: echo 'alias sf="php bin/console"' >> ~/.bashrc

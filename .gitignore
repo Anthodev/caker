@@ -8,3 +8,4 @@
 !build/
 
 app/docker/db/data
+/.idea/
